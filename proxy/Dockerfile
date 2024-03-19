@@ -1,15 +1,10 @@
-FROM python:3.9
-
-COPY requirements.txt /requirements.txt
-
-RUN pip install --upgrade pip 
+FROM python:3.9-slim
 
 WORKDIR /app
 
- 
+COPY requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY . /app
 
-EXPOSE 3041  
-
-CMD ["python", "wsgi.py"]
+CMD ["python", "api.py"]

@@ -1,20 +1,12 @@
-# Base image for Python environment (choose appropriate version)
-FROM python:3.8
+FROM python:3.8  # Replace with appropriate Python version
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements.txt (if using external dependencies)
-COPY requirements.txt ./
+COPY requirements.txt ./  # Copy requirements.txt if using external dependencies
+RUN pip install -r requirements.txt  # Install dependencies if needed
 
-# Install dependencies (if using requirements.txt)
-RUN pip install -r requirements.txt
-
-# Copy application code
 COPY . .
 
-# Expose the port (replace 3041/3040 with actual ports)
-EXPOSE 3041
+EXPOSE 3040  # Replace with the desired port for the sentiment service
 
-# Command to run the application
-CMD ["python", "app.py"]
+CMD ["python", "wsgi.py"]

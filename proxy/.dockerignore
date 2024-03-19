@@ -1,7 +1,7 @@
 # Exclude specific files
 # file.txt
 # secret.key
-requirements.txt
+
 # Exclude directories
 # node_modules/
 .git/

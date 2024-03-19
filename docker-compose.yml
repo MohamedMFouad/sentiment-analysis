@@ -2,29 +2,27 @@ version: "2.3"
 networks:
   sentiment_network:
     name: sentiment_network
-    
+
 services:
   proxy:
     networks:
       - sentiment_network
     container_name: sentiment_proxy_service
-    image: "sentiment_proxy"
     build:
       context: ./proxy
-      dockerfile: Dockerfile
-
+      dockerfile: Dockerfile   
     ports:
-      - "3041:3041"
+      - "3041:3041"  
     volumes:
-      - "./proxy:/app"
+      - "./proxy:/app"  
 
-            
   sentiment_service:
-    container_name: sentiment_service
-    image: "sentiment_image"
     networks:
       - sentiment_network
+    container_name: sentiment_service
     build:
       context: ./sentiment
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile   
+    ports:
+      - "3040:3040"  
 

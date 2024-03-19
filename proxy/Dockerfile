@@ -2,11 +2,11 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY ./requirements.txt / # Copy requirements.txt if using external dependencies
-RUN pip install -r requirements.txt  # Install dependencies if needed
+COPY ./requirements.txt / 
+RUN pip install -r requirements.txt 
 
 COPY . .
 
-EXPOSE 3041  # Replace with the desired port for the proxy service
+EXPOSE 3041  
 
 CMD ["python", "wsgi.py"]

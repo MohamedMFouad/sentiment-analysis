@@ -1,13 +1,22 @@
-Dockerfile
-FROM python:3.8  # Replace with appropriate Python version
+from flask import Flask, request, jsonify
+import requests
 
-WORKDIR /app
+app = Flask(__name__)
 
-COPY requirements.txt ./  # Copy requirements.txt if using external dependencies
-RUN pip install -r requirements.txt  # Install dependencies if needed
+@app.route('/sentiment-analysis', methods=['POST'])
+def analyze_sentiment():
+    data = request.get_json()
+    text = data.get('text')
 
-COPY . .
+    if not text:
+        return jsonify({'error': 'Invalid request'}), 400
 
-EXPOSE 3041  # Replace with the desired port for the proxy service
+    result = requests.post("http://sentiment_service:3040/sentiment-analysis",
+                         json = {"text": text}).json()
+    # print(result, flush=True)
+    sentiment = result['sentiment']
+    score = result['score']
 
-CMD ["python", "wsgi.py"]
+    return jsonify({'sentiment': sentiment, 'score': score}), 200
+
+

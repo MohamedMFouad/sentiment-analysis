@@ -1,0 +1,86 @@
+## Documentation: Scalability and High Availability
+
+This document describes the implemented features for scalability and high availability in the provided Kubernetes deployment configuration.
+
+**Current Configuration:**
+
+The provided deployment configuration defines two separate deployments:
+
+* `sentiment-proxy-deployment`: This deployment manages the sentiment proxy service.
+* `sentiment-service-deployment`: This deployment manages the sentiment analysis service.
+
+**Scalability:**
+
+- **Limited Scalability:** Currently, both deployments are configured with a single replica (`replicas: 1`). This provides limited scalability as a single pod failure would cause service disruption.
+
+**High Availability:**
+
+- **No High Availability Features:** The current configuration lacks features for automatic pod restarts or scaling in case of failures.
+
+**Recommendations for Improved Scalability and High Availability:**
+
+To achieve better scalability and high availability, consider implementing the following changes:
+
+**1. Horizontal Pod Autoscaler (HPA):**
+
+- Define Horizontal Pod Autoscaler (HPA) resources for each deployment. HPAs automatically scale the number of pods based on predefined metrics (e.g., CPU usage, memory usage). This ensures the service can handle increased load without manual intervention.
+
+**2. Liveness and Readiness Probes:**
+
+- Configure liveness and readiness probes for each container within the deployments. These probes help Kubernetes determine if a pod is healthy and ready to serve traffic. Unhealthy pods can be restarted automatically based on probe results.
+
+**3. Replica Count Adjustment:**
+
+- Increase the replica count for each deployment beyond 1 to provide redundancy. This allows the service to remain functional even if a pod fails.
+
+**Markdown Example for HPA Deployment:**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-proxy-deployment
+spec:
+  replicas: 2  # Increased replica count for redundancy
+  selector:
+    matchLabels:
+      app: sentiment-proxy
+  template:
+    metadata:
+      labels:
+        app: sentiment-proxy
+    spec:
+      containers:
+      - name: sentiment-proxy
+        image: mohamedmfouad/sentiment-proxy
+        ports:
+        - containerPort: 3041
+        volumeMounts:
+        - name: proxy-volume
+          mountPath: /app
+      volumes:
+      - name: proxy-volume
+        emptyDir: {}
+---
+# HPA for sentiment-proxy deployment
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sentiment-proxy-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sentiment-proxy-deployment
+  minReplicas: 2  # Minimum number of replicas
+  maxReplicas: 5  # Maximum number of replicas
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80  # Scale up if CPU usage reaches 80%
+```
+
+ 

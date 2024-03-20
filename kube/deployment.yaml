@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-proxy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-proxy
+  template:
+    metadata:
+      labels:
+        app: sentiment-proxy
+    spec:
+      containers:
+        - name: sentiment-proxy
+          image: mohamedmfouad/sentiment-proxy
+          ports:
+            - containerPort: 3041
+          volumeMounts:
+            - name: proxy-volume
+              mountPath: /app
+      volumes:
+        - name: proxy-volume
+          emptyDir: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-service
+  template:
+    metadata:
+      labels:
+        app: sentiment-service
+    spec:
+      containers:
+        - name: sentiment-service
+          image: mohamedmfouad/sentiment-service
+          ports:
+            - containerPort: 3040

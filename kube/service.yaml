@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentiment-proxy-service
+spec:
+  selector:
+    app: sentiment-proxy
+  ports:
+    - protocol: TCP
+      port: 3041
+      targetPort: 3041
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentiment-service-service
+spec:
+  selector:
+    app: sentiment-service
+  ports:
+    - protocol: TCP
+      port: 3040
+      targetPort: 3040

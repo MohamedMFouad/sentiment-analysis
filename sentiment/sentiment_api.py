@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
-from transformers import pipeline
+import requests
+from datetime import datetime
 
 app = Flask(__name__)
-
-## Load the model or download if not present.
-sentiment_analysis = pipeline("sentiment-analysis")
 
 @app.route('/sentiment-analysis', methods=['POST'])
 def analyze_sentiment():
@@ -14,10 +12,15 @@ def analyze_sentiment():
     if not text:
         return jsonify({'error': 'Invalid request'}), 400
 
-    result = sentiment_analysis(text)
+    start_time = datetime.now()
 
-    sentiment = result[0]['label']
-    score = result[0]['score']
+    result = requests.post("http://sentiment_service:3040/sentiment-analysis",
+                           json={"text": text}).json()
 
-    return jsonify({'sentiment': sentiment, 'score': score}), 200
+    end_time = datetime.now()
+    response_time = (end_time - start_time).total_seconds() * 1000  # in milliseconds
 
+    sentiment = result['sentiment']
+    score = result['score']
+
+    return jsonify({'sentiment': sentiment, 'score': score, 'response_time': response_time}), 200
